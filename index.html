@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jon Padilha · Daytrade Academy</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#080c10;--bg2:#0d1117;--bg3:#121820;--card:#111820;
+    --border:#1e2a38;--gold:#d4a843;--gold2:#f5c842;
+    --green:#00e676;--red:#ff4444;--blue:#1e90ff;
+    --text:#c8d8e8;--muted:#5a7080;--white:#e8f0f8;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden}
+  body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(212,168,67,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(212,168,67,.03) 1px,transparent 1px);background-size:48px 48px;pointer-events:none;z-index:0}
+
+  /* TICKER */
+  .ticker-wrap{background:#0a0e13;border-bottom:1px solid var(--border);overflow:hidden;height:36px;display:flex;align-items:center;position:relative;z-index:100}
+  .ticker-label{background:var(--gold);color:#000;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;padding:0 14px;height:100%;display:flex;align-items:center;white-space:nowrap;letter-spacing:1px;flex-shrink:0}
+  .ticker-track{display:flex;animation:ticker 30s linear infinite;white-space:nowrap}
+  .ticker-item{font-family:'JetBrains Mono',monospace;font-size:11px;padding:0 28px;display:flex;gap:8px}
+  .ticker-item .sym{color:var(--white);font-weight:600}
+  .ticker-item .up{color:var(--green)}
+  .ticker-item .dn{color:var(--red)}
+  @keyframes ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+  /* HEADER */
+  header{position:sticky;top:0;z-index:10;padding:0 40px;height:72px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:rgba(8,12,16,.95);backdrop-filter:blur(12px)}
+  .logo{display:flex;align-items:center;gap:14px;text-decoration:none}
+  .logo-icon{width:42px;height:42px;background:var(--gold);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:20px;color:#000;letter-spacing:1px;clip-path:polygon(0 0,90% 0,100% 10%,100% 100%,10% 100%,0 90%)}
+  .logo-name{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--white);letter-spacing:2px;display:block;line-height:1}
+  .logo-sub{font-size:10px;color:var(--gold);letter-spacing:3px;text-transform:uppercase;font-weight:500;display:block}
+  nav a{color:var(--muted);text-decoration:none;font-size:13px;font-weight:500;padding:6px 14px;border-radius:4px;transition:all .2s;letter-spacing:.5px}
+  nav a:hover{color:var(--gold);background:rgba(212,168,67,.08)}
+  .header-yt{display:flex;align-items:center;gap:10px;background:#ff0000;color:#fff;font-size:12px;font-weight:600;padding:8px 16px;border-radius:4px;text-decoration:none;letter-spacing:.5px;transition:opacity .2s}
+  .header-yt:hover{opacity:.85}
+
+  /* HERO */
+  .hero{position:relative;z-index:1;padding:80px 40px 60px;text-align:center;overflow:hidden}
+  .hero::before{content:'';position:absolute;top:-40px;left:50%;transform:translateX(-50%);width:600px;height:300px;background:radial-gradient(ellipse,rgba(212,168,67,.12) 0%,transparent 70%);pointer-events:none}
+  .hero-tag{display:inline-flex;align-items:center;gap:8px;background:rgba(212,168,67,.1);border:1px solid rgba(212,168,67,.25);color:var(--gold);font-size:11px;font-weight:600;letter-spacing:3px;padding:6px 16px;border-radius:2px;text-transform:uppercase;margin-bottom:28px}
+  .hero-tag span{width:6px;height:6px;background:var(--gold);border-radius:50%;animation:pulse 1.5s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.2}}
+  h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(54px,8vw,100px);line-height:.92;letter-spacing:4px;color:var(--white);margin-bottom:6px}
+  h1 em{font-style:normal;color:var(--gold)}
+  .hero-sub{font-size:15px;color:var(--muted);max-width:560px;margin:20px auto 0;line-height:1.7;font-weight:300}
+  .update-badge{display:inline-block;margin-top:12px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);background:var(--bg3);border:1px solid var(--border);padding:4px 12px;border-radius:2px}
+
+  /* SEARCH */
+  .search-wrap{position:relative;z-index:1;max-width:600px;margin:40px auto 0}
+  .search-box{display:flex;align-items:center;gap:12px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:0 18px;transition:border-color .25s,box-shadow .25s}
+  .search-box:focus-within{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,168,67,.12),0 8px 32px rgba(0,0,0,.5)}
+  .search-icon{color:var(--muted);flex-shrink:0}
+  #searchInput{width:100%;background:none;border:none;outline:none;color:var(--white);font-family:'DM Sans',sans-serif;font-size:15px;padding:16px 0;caret-color:var(--gold)}
+  #searchInput::placeholder{color:var(--muted)}
+  .search-kbd{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);background:var(--border);padding:3px 8px;border-radius:3px;white-space:nowrap;flex-shrink:0}
+  #searchDropdown{position:absolute;top:calc(100% + 8px);left:0;right:0;background:var(--bg2);border:1px solid var(--gold);border-radius:8px;overflow:hidden;box-shadow:0 24px 48px rgba(0,0,0,.7);display:none;z-index:1000;max-height:420px;overflow-y:auto}
+  #searchDropdown.show{display:block;animation:dropIn .2s ease}
+  @keyframes dropIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+  .drop-header{padding:10px 16px;font-size:10px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;font-weight:600;border-bottom:1px solid var(--border);background:rgba(212,168,67,.05)}
+  .drop-item{display:flex;align-items:center;gap:12px;padding:13px 16px;cursor:pointer;transition:background .15s;text-decoration:none;color:inherit;border-bottom:1px solid rgba(30,42,56,.5)}
+  .drop-item:hover{background:rgba(212,168,67,.08)}
+  .drop-item:last-child{border-bottom:none}
+  .drop-module-badge{font-size:9px;font-weight:600;letter-spacing:1px;padding:3px 8px;border-radius:2px;background:rgba(212,168,67,.15);color:var(--gold);white-space:nowrap;flex-shrink:0;text-transform:uppercase}
+  .drop-title{font-size:13px;font-weight:500;color:var(--white)}
+  .drop-title mark{background:none;color:var(--gold);font-weight:700}
+  .drop-desc{font-size:11px;color:var(--muted);margin-top:1px}
+  .drop-yt-icon{margin-left:auto;color:#ff4444;flex-shrink:0}
+  .drop-empty{padding:24px;text-align:center;color:var(--muted);font-size:13px}
+
+  /* STATS */
+  .stats-row{display:flex;justify-content:center;gap:48px;padding:40px;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin-top:60px;position:relative;z-index:1;flex-wrap:wrap}
+  .stat{text-align:center}
+  .stat-num{font-family:'Bebas Neue',sans-serif;font-size:40px;color:var(--gold);letter-spacing:2px;line-height:1}
+  .stat-label{font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-top:4px}
+
+  /* MODULES */
+  .modules-section{max-width:1200px;margin:0 auto;padding:60px 40px 100px;position:relative;z-index:1}
+  .section-header{display:flex;align-items:baseline;gap:16px;margin-bottom:48px}
+  .section-title{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:3px;color:var(--white)}
+  .section-line{flex:1;height:1px;background:linear-gradient(90deg,var(--border),transparent)}
+  .section-count{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);background:var(--bg3);padding:4px 10px;border:1px solid var(--border);border-radius:3px}
+  .module{border:1px solid var(--border);border-radius:8px;margin-bottom:16px;overflow:hidden;transition:border-color .25s}
+  .module:hover{border-color:rgba(212,168,67,.3)}
+  .module.open{border-color:var(--gold)}
+  .module-header{display:flex;align-items:center;gap:16px;padding:20px 24px;cursor:pointer;background:var(--card);transition:background .2s;user-select:none}
+  .module-header:hover{background:#141e28}
+  .module-num{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:var(--gold);background:rgba(212,168,67,.1);border:1px solid rgba(212,168,67,.25);padding:4px 10px;border-radius:3px;min-width:50px;text-align:center;letter-spacing:1px}
+  .module-info{flex:1}
+  .module-name{font-size:15px;font-weight:600;color:var(--white);letter-spacing:.3px}
+  .module-meta{font-size:11px;color:var(--muted);margin-top:3px;display:flex;gap:16px}
+  .module-chevron{color:var(--muted);transition:transform .3s;flex-shrink:0}
+  .module.open .module-chevron{transform:rotate(180deg)}
+  .module-body{display:none;background:var(--bg2);border-top:1px solid var(--border)}
+  .module.open .module-body{display:block}
+  .lesson{display:flex;align-items:center;gap:16px;padding:14px 24px;border-bottom:1px solid rgba(30,42,56,.6);text-decoration:none;color:inherit;transition:background .15s}
+  .lesson:last-child{border-bottom:none}
+  .lesson:hover{background:rgba(212,168,67,.05)}
+  .lesson-num{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);min-width:28px;text-align:right}
+  .lesson-dot{width:8px;height:8px;border-radius:50%;background:var(--border);border:2px solid var(--muted);flex-shrink:0;transition:background .2s,border-color .2s}
+  .lesson:hover .lesson-dot{background:var(--gold);border-color:var(--gold)}
+  .lesson-info{flex:1}
+  .lesson-title{font-size:13px;font-weight:500;color:var(--text)}
+  .lesson-tags{display:flex;gap:6px;margin-top:4px;flex-wrap:wrap}
+  .lesson-dur{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);white-space:nowrap}
+  .tag{font-size:9px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:2px 7px;border-radius:2px}
+  .tag-teoria{background:rgba(30,144,255,.15);color:#5aabff}
+  .tag-pratica{background:rgba(0,230,118,.1);color:#00c962}
+  .tag-setup{background:rgba(212,168,67,.12);color:var(--gold)}
+  .tag-gestao{background:rgba(255,68,68,.1);color:#ff7070}
+  .tag-psico{background:rgba(180,100,255,.12);color:#b87aff}
+  .tag-ao-vivo{background:rgba(255,69,0,.15);color:#ff6433}
+  .lesson-yt{display:flex;align-items:center;gap:6px;font-size:11px;color:#ff4444;font-weight:600;opacity:0;transition:opacity .2s;white-space:nowrap}
+  .lesson:hover .lesson-yt{opacity:1}
+
+  /* PROFESSOR */
+  .professor-section{background:var(--bg3);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:60px 40px;position:relative;z-index:1}
+  .professor-inner{max-width:900px;margin:0 auto;display:flex;gap:48px;align-items:center;flex-wrap:wrap}
+  .professor-avatar{width:120px;height:120px;border-radius:4px;background:linear-gradient(135deg,var(--gold),#8b6914);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:48px;color:#000;letter-spacing:2px;flex-shrink:0}
+  .professor-label{font-size:10px;letter-spacing:3px;color:var(--gold);text-transform:uppercase;font-weight:600;margin-bottom:8px}
+  .professor-name{font-family:'Bebas Neue',sans-serif;font-size:42px;color:var(--white);letter-spacing:3px;line-height:1;margin-bottom:12px}
+  .professor-bio{font-size:14px;color:var(--muted);line-height:1.75;max-width:560px}
+  .professor-links{display:flex;gap:12px;margin-top:20px;flex-wrap:wrap}
+  .prof-link{display:flex;align-items:center;gap:8px;padding:8px 16px;border-radius:4px;font-size:12px;font-weight:600;text-decoration:none;letter-spacing:.5px;transition:all .2s}
+  .prof-link-yt{background:#ff0000;color:#fff}
+  .prof-link-yt:hover{background:#cc0000}
+
+  footer{background:var(--bg);border-top:1px solid var(--border);padding:32px 40px;text-align:center;position:relative;z-index:1}
+  footer p{font-size:12px;color:var(--muted)}
+  footer strong{color:var(--gold)}
+  .footer-mono{font-family:'JetBrains Mono',monospace;font-size:10px;color:#2a3a4a;margin-top:8px}
+
+  ::-webkit-scrollbar{width:6px}
+  ::-webkit-scrollbar-track{background:var(--bg)}
+  ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+  ::-webkit-scrollbar-thumb:hover{background:var(--gold)}
+
+  @media(max-width:768px){
+    header{padding:0 20px}
+    nav{display:none}
+    h1{font-size:52px}
+    .hero{padding:50px 20px 40px}
+    .stats-row{gap:28px;padding:30px 20px}
+    .modules-section{padding:40px 20px 60px}
+    .professor-inner{flex-direction:column;text-align:center}
+    .professor-links{justify-content:center}
+  }
+</style>
+
+<style id="mobile-optimizations">
+@media(max-width:768px){
+
+  /* HEADER */
+  header { padding: 0 16px !important; height: 60px !important; }
+  .logo-name { font-size: 18px !important; }
+  .logo-sub { font-size: 9px !important; }
+  nav { display: none !important; }
+  .header-yt span { display: none; }
+  .header-yt { padding: 8px 12px !important; border-radius: 50% !important; }
+
+  /* HERO */
+  .hero { padding: 40px 20px 30px !important; }
+  h1 { font-size: 52px !important; letter-spacing: 2px !important; }
+  .hero-sub { font-size: 14px !important; }
+  .update-badge { font-size: 9px !important; }
+
+  /* SEARCH */
+  .search-wrap { margin: 28px 16px 0 !important; }
+  #searchInput { font-size: 14px !important; }
+  .search-kbd { display: none !important; }
+  #searchDropdown { left: 0 !important; right: 0 !important; }
+
+  /* STATS */
+  .stats-row {
+    gap: 0 !important;
+    padding: 0 !important;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    border-radius: 0 !important;
+  }
+  .stat {
+    padding: 24px 16px !important;
+    border-right: 1px solid #1e2a38;
+    border-bottom: 1px solid #1e2a38;
+  }
+  .stat-num { font-size: 32px !important; }
+  .stat-label { font-size: 10px !important; }
+
+  /* MODULES */
+  .modules-section { padding: 32px 12px 60px !important; }
+  .section-title { font-size: 26px !important; }
+  .module-header { padding: 16px !important; gap: 10px !important; }
+  .module-name { font-size: 13px !important; }
+  .module-meta { font-size: 10px !important; flex-wrap: wrap !important; gap: 6px !important; }
+  .module-num { font-size: 10px !important; min-width: 42px !important; }
+  .lesson { padding: 12px 14px !important; gap: 10px !important; }
+  .lesson-title { font-size: 12px !important; }
+  .lesson-dur { display: none !important; }
+  .lesson-num { min-width: 20px !important; font-size: 10px !important; }
+
+  /* CTA BANNER */
+  .cta-banner-inner { padding: 40px 20px !important; }
+
+  /* DEPOIMENTOS */
+  .testimonials-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* PROFESSOR */
+  .professor-section { padding: 40px 20px !important; }
+  .professor-name { font-size: 32px !important; }
+  .professor-bio { font-size: 13px !important; }
+  .professor-inner { gap: 28px !important; }
+
+  /* WHATSAPP BTN */
+  #waBtn { 
+    bottom: 16px !important; 
+    right: 16px !important;
+    padding: 14px !important;
+    border-radius: 50% !important;
+  }
+  #waBtn span { display: none !important; }
+
+  /* FOOTER */
+  footer { padding: 24px 16px !important; }
+  footer p { font-size: 11px !important; }
+
+  /* TICKER */
+  .ticker-item { padding: 0 16px !important; font-size: 10px !important; }
+}
+
+/* Touch improvements */
+.lesson, .module-header, .drop-item {
+  -webkit-tap-highlight-color: rgba(212,168,67,.15);
+  touch-action: manipulation;
+}
+.module-header:active { background: #1a2530 !important; }
+.lesson:active { background: rgba(212,168,67,.08) !important; }
+
+/* Smooth scroll */
+html { scroll-behavior: smooth; -webkit-overflow-scrolling: touch; }
+
+/* Bigger touch targets mobile */
+@media(max-width:768px){
+  .lesson { min-height: 56px; }
+  .module-header { min-height: 64px; }
+  a, button { min-height: 44px; }
+}
+</style>
+
+</head>
+<body>
+
+<div class="ticker-wrap">
+  <div class="ticker-label">MERCADO AO VIVO</div>
+  <div style="overflow:hidden;flex:1">
+    <div class="ticker-track">
+      <div class="ticker-item"><span class="sym">IBOV</span><span class="up">▲ 127.543 +0,84%</span></div>
+      <div class="ticker-item"><span class="sym">WIN$</span><span class="up">▲ 127.560 +0,91%</span></div>
+      <div class="ticker-item"><span class="sym">WDO$</span><span class="dn">▼ 5.742 -0,34%</span></div>
+      <div class="ticker-item"><span class="sym">PETR4</span><span class="up">▲ 38,24 +1,2%</span></div>
+      <div class="ticker-item"><span class="sym">VALE3</span><span class="dn">▼ 61,80 -0,6%</span></div>
+      <div class="ticker-item"><span class="sym">BTC/BRL</span><span class="up">▲ R$ 534.800 +2,1%</span></div>
+      <div class="ticker-item"><span class="sym">IBOV</span><span class="up">▲ 127.543 +0,84%</span></div>
+      <div class="ticker-item"><span class="sym">WIN$</span><span class="up">▲ 127.560 +0,91%</span></div>
+      <div class="ticker-item"><span class="sym">WDO$</span><span class="dn">▼ 5.742 -0,34%</span></div>
+      <div class="ticker-item"><span class="sym">PETR4</span><span class="up">▲ 38,24 +1,2%</span></div>
+      <div class="ticker-item"><span class="sym">VALE3</span><span class="dn">▼ 61,80 -0,6%</span></div>
+      <div class="ticker-item"><span class="sym">BTC/BRL</span><span class="up">▲ R$ 534.800 +2,1%</span></div>
+    </div>
+  </div>
+</div>
+
+<header>
+  <a href="#" class="logo">
+    <div class="logo-icon">JP</div>
+    <div>
+      <span class="logo-name">JON PADILHA</span>
+      <span class="logo-sub">Daytrade Academy</span>
+    </div>
+  </a>
+  <nav>
+    <a href="#modulos">Módulos</a>
+    <a href="#professor">Professor</a>
+    <a href="https://youtube.com/@jonpadilha" target="_blank">YouTube</a>
+  </nav>
+  <a href="https://youtube.com/@jonpadilha" target="_blank" class="header-yt">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+    Inscreva-se
+  </a>
+</header>
+
+<section class="hero">
+  <div class="hero-tag"><span></span> Canal Ativo no YouTube</div>
+  <h1>APRENDA<br><em>DAYTRADE</em></h1>
+  <p class="hero-sub">Curso completo estruturado em módulos temáticos. Cada aula leva direto ao vídeo no YouTube. Do zero ao operacional.</p>
+  <div class="update-badge">⚡ Atualizado automaticamente em 28/04/2026 04:59 · 304 vídeos indexados</div>
+
+  <div class="search-wrap">
+    <div class="search-box">
+      <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" id="searchInput" placeholder="Buscar aula, tópico, indicador... (3 letras)" autocomplete="off">
+      <span class="search-kbd">⌘ K</span>
+    </div>
+    <div id="searchDropdown">
+      <div class="drop-header">Resultados encontrados</div>
+      <div id="dropResults"></div>
+    </div>
+  </div>
+</section>
+
+<div class="stats-row">
+  <div class="stat"><div class="stat-num">8</div><div class="stat-label">Módulos</div></div>
+  <div class="stat"><div class="stat-num">304</div><div class="stat-label">Aulas</div></div>
+  <div class="stat"><div class="stat-num">100%</div><div class="stat-label">Gratuito</div></div>
+  <div class="stat"><div class="stat-num">∞</div><div class="stat-label">Acesso</div></div>
+</div>
+
+
+<section style="background:linear-gradient(135deg,#0a0e13 0%,#1a2a1a 100%);border-top:1px solid #1e2a38;border-bottom:1px solid #25d366;padding:60px 40px;text-align:center;position:relative;z-index:1;overflow:hidden;">
+  <div style="position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(37,211,102,.07) 0%,transparent 70%);pointer-events:none;"></div>
+  <p style="font-size:11px;letter-spacing:3px;color:#25d366;text-transform:uppercase;font-weight:700;margin-bottom:16px;">🔥 Mentoria Exclusiva · Vagas Limitadas</p>
+  <h2 style="font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,6vw,72px);color:#e8f0f8;letter-spacing:3px;line-height:1;margin-bottom:16px;">QUER OPERAR AO LADO<br><span style="color:#25d366;">DE JON PADILHA?</span></h2>
+  <p style="font-size:15px;color:#5a7080;max-width:520px;margin:0 auto 32px;line-height:1.7;">Acompanhamento personalizado, análises em tempo real e suporte direto com o professor. Descubra como acelerar seus resultados no Daytrade.</p>
+  <a href="https://wa.me/p/25502167309396224/5521964440418" target="_blank"
+     style="display:inline-flex;align-items:center;gap:12px;background:#25d366;color:#000;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;padding:16px 36px;border-radius:50px;text-decoration:none;letter-spacing:.5px;box-shadow:0 8px 32px rgba(37,211,102,.4);transition:all .2s;">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="black"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.122 1.524 5.859L.057 23.428a.5.5 0 0 0 .609.61l5.657-1.485A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.853 0-3.593-.5-5.095-1.373l-.363-.214-3.764.988.999-3.67-.235-.38A9.957 9.957 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+    Quero Mentoria com Jon
+  </a>
+  <p style="font-size:11px;color:#2a3a4a;margin-top:16px;">Resposta em até 24h · Sem compromisso</p>
+</section>
+
+
+
+
+<section class="modules-section" id="modulos">
+  <div class="section-header">
+    <span class="section-title">MÓDULOS DO CURSO</span>
+    <div class="section-line"></div>
+    <span class="section-count">8 módulos · 304 aulas</span>
+  </div>
+  <div id="modulesList"></div>
+
+<div style="background:linear-gradient(135deg,rgba(37,211,102,.08),rgba(37,211,102,.03));border:1px solid rgba(37,211,102,.25);border-radius:8px;padding:28px 32px;margin:16px 0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px;">
+  <div>
+    <p style="font-size:11px;color:#25d366;letter-spacing:2px;text-transform:uppercase;font-weight:700;margin-bottom:6px;">💡 Dica do Professor</p>
+    <p style="font-size:14px;color:#c8d8e8;font-weight:500;">Quer tirar dúvidas diretamente com Jon Padilha?</p>
+    <p style="font-size:12px;color:#5a7080;margin-top:4px;">Mentoria personalizada com acompanhamento real de operações</p>
+  </div>
+  <a href="https://wa.me/p/25502167309396224/5521964440418" target="_blank"
+     style="display:inline-flex;align-items:center;gap:8px;background:#25d366;color:#000;font-size:12px;font-weight:700;padding:12px 22px;border-radius:50px;text-decoration:none;white-space:nowrap;">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="black"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.122 1.524 5.859L.057 23.428a.5.5 0 0 0 .609.61l5.657-1.485A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.853 0-3.593-.5-5.095-1.373l-.363-.214-3.764.988.999-3.67-.235-.38A9.957 9.957 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+    Falar no WhatsApp
+  </a>
+</div>
+
+
+<div style="background:linear-gradient(135deg,rgba(37,211,102,.08),rgba(37,211,102,.03));border:1px solid rgba(37,211,102,.25);border-radius:8px;padding:28px 32px;margin:16px 0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px;">
+  <div>
+    <p style="font-size:11px;color:#25d366;letter-spacing:2px;text-transform:uppercase;font-weight:700;margin-bottom:6px;">💡 Dica do Professor</p>
+    <p style="font-size:14px;color:#c8d8e8;font-weight:500;">Quer tirar dúvidas diretamente com Jon Padilha?</p>
+    <p style="font-size:12px;color:#5a7080;margin-top:4px;">Mentoria personalizada com acompanhamento real de operações</p>
+  </div>
+  <a href="https://wa.me/p/25502167309396224/5521964440418" target="_blank"
+     style="display:inline-flex;align-items:center;gap:8px;background:#25d366;color:#000;font-size:12px;font-weight:700;padding:12px 22px;border-radius:50px;text-decoration:none;white-space:nowrap;">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="black"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.122 1.524 5.859L.057 23.428a.5.5 0 0 0 .609.61l5.657-1.485A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.853 0-3.593-.5-5.095-1.373l-.363-.214-3.764.988.999-3.67-.235-.38A9.957 9.957 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+    Falar no WhatsApp
+  </a>
+</div>
+
+</section>
+
+
+<section style="background:#0d1117;border-bottom:1px solid #1e2a38;padding:70px 40px;position:relative;z-index:1;">
+  <div style="max-width:1100px;margin:0 auto;">
+    <div style="text-align:center;margin-bottom:52px;">
+      <p style="font-size:11px;letter-spacing:3px;color:#d4a843;text-transform:uppercase;font-weight:600;margin-bottom:10px;">Resultados Reais</p>
+      <h2 style="font-family:'Bebas Neue',sans-serif;font-size:clamp(32px,5vw,60px);color:#e8f0f8;letter-spacing:3px;">O QUE DIZEM OS ALUNOS</h2>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;">
+
+      <div style="background:#111820;border:1px solid #1e2a38;border-radius:8px;padding:28px;border-left:3px solid #25d366;">
+        <div style="display:flex;gap:4px;margin-bottom:14px;">⭐⭐⭐⭐⭐</div>
+        <p style="font-size:14px;color:#c8d8e8;line-height:1.7;margin-bottom:18px;">"Comecei do zero e em 3 meses já estava operando com consistência. O método do Jon é direto ao ponto, sem enrolação."</p>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#25d366,#128c4a);display:flex;align-items:center;justify-content:center;font-weight:700;color:#000;font-size:14px;">R</div>
+          <div><div style="font-size:13px;font-weight:600;color:#e8f0f8;">Rafael M.</div><div style="font-size:11px;color:#5a7080;">Trader · São Paulo/SP</div></div>
+        </div>
+      </div>
+
+      <div style="background:#111820;border:1px solid #1e2a38;border-radius:8px;padding:28px;border-left:3px solid #d4a843;">
+        <div style="display:flex;gap:4px;margin-bottom:14px;">⭐⭐⭐⭐⭐</div>
+        <p style="font-size:14px;color:#c8d8e8;line-height:1.7;margin-bottom:18px;">"Tentei vários cursos antes e só perdia dinheiro. Com o canal do Jon aprendi gestão de risco de verdade. Mudou minha operação."</p>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#d4a843,#8b6914);display:flex;align-items:center;justify-content:center;font-weight:700;color:#000;font-size:14px;">C</div>
+          <div><div style="font-size:13px;font-weight:600;color:#e8f0f8;">Camila S.</div><div style="font-size:11px;color:#5a7080;">Trader · Rio de Janeiro/RJ</div></div>
+        </div>
+      </div>
+
+      <div style="background:#111820;border:1px solid #1e2a38;border-radius:8px;padding:28px;border-left:3px solid #1e90ff;">
+        <div style="display:flex;gap:4px;margin-bottom:14px;">⭐⭐⭐⭐⭐</div>
+        <p style="font-size:14px;color:#c8d8e8;line-height:1.7;margin-bottom:18px;">"O conteúdo gratuito do canal já é melhor que curso pago que fiz. Imagina a mentoria! Jon explica com clareza que raramente vejo."</p>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#1e90ff,#0a4f8c);display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:14px;">M</div>
+          <div><div style="font-size:13px;font-weight:600;color:#e8f0f8;">Marcos T.</div><div style="font-size:11px;color:#5a7080;">Trader · Belo Horizonte/MG</div></div>
+        </div>
+      </div>
+
+    </div>
+
+    <div style="text-align:center;margin-top:44px;">
+      <a href="https://wa.me/p/25502167309396224/5521964440418" target="_blank"
+         style="display:inline-flex;align-items:center;gap:10px;background:transparent;border:1px solid #25d366;color:#25d366;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;padding:12px 28px;border-radius:50px;text-decoration:none;letter-spacing:.5px;transition:all .2s;">
+        Quero esses resultados também →
+      </a>
+    </div>
+  </div>
+</section>
+
+
+
+
+<section class="professor-section" id="professor">
+  <div class="professor-inner">
+    <div class="professor-avatar">JP</div>
+    <div class="professor-info">
+      <div class="professor-label">Seu Professor</div>
+      <div class="professor-name">JON PADILHA</div>
+      <p class="professor-bio">Especulador e analista técnico com experiência nos mercados de Forex, Opções Binárias, Futuros e Criptomoedas. Autor do livro <em>"Análise Técnica Para Daytrade"</em>, Jon compartilha conhecimento prático e objetivo para traders de todos os níveis.</p>
+      <div class="professor-links">
+        <a href="https://youtube.com/@jonpadilha" target="_blank" class="prof-link prof-link-yt">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+          @jonpadilha no YouTube
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>© 2025 <strong>Jon Padilha · Daytrade Academy</strong> · Conteúdo educacional gratuito no YouTube</p>
+  <div class="footer-mono">// Gerado automaticamente por pipeline yt-dlp + Claude · 28/04/2026 04:59</div>
+</footer>
+
+<script>
+// AUTO-GERADO — NÃO EDITAR MANUALMENTE
+// Para atualizar: rode jonpadilha_pipeline.py novamente
+
+const TAG_MAP = {
+  teoria:   ["tag-teoria",  "Teoria"],
+  pratica:  ["tag-pratica", "Prática"],
+  setup:    ["tag-setup",   "Setup"],
+  gestao:   ["tag-gestao",  "Gestão"],
+  psico:    ["tag-psico",   "Psicologia"],
+  "ao-vivo":["tag-ao-vivo","Ao Vivo"],
+};
+
+const COURSE = [
+  {
+    id:"M01", name:"Fundamentos do Mercado Financeiro",
+    aulas:8,
+    lessons:[
+      { title:"Operacional com Análise Técnica - INTRODUÇÃO", tags:["teoria"], link:"https://www.youtube.com/watch?v=CoBEYVNcsdk", dur:"24:02" },
+      { title:"SP500 #mercadofinanceiroamericano #trader #btc #forex", tags:["teoria"], link:"https://www.youtube.com/watch?v=Yb_L-FTLX5E" },
+      { title:"Mentoria 🪓 #btc #bolsadevalores #trader", tags:["teoria"], link:"https://www.youtube.com/watch?v=DFzCS7yBpPM" },
+      { title:"#btc Alvo: R$515,00 🚀 #bolsadevalores #mercadofinanceiroamericano #trader", tags:["teoria"], link:"https://www.youtube.com/watch?v=Z3L7RFkPEhg" },
+      { title:"Se você não comprar e vender ao MESMO TEMPO, nunca vai vencer no Mercado. #btc #forex #negocios", tags:["teoria"], link:"https://www.youtube.com/watch?v=vl3vs4ailrE" },
+      { title:"Costurando o Mercado 🔥📌 #bitcoin #forex", tags:["teoria"], link:"https://www.youtube.com/watch?v=Mf_EC8NxIVk" },
+      { title:"Não opere #b3 #dinheiro #bitcoin #forex #investimentos", tags:["teoria"], link:"https://www.youtube.com/watch?v=X8_qeIUTJX4" },
+      { title:"Existe uma forma de ler o Mercado e lucrar #dinheiro #investimentos", tags:["teoria"], link:"https://www.youtube.com/watch?v=Gb9iUubIn4I" }
+    ]
+  },
+  {
+    id:"M02", name:"Análise Técnica — Conceitos Base",
+    aulas:19,
+    lessons:[
+      { title:"Rompimento Defesa de Lote", tags:["teoria", "pratica"], link:"https://www.youtube.com/watch?v=Pvy1O1J6rqw", dur:"0:28" },
+      { title:"Pullback em Rompimento de Indecisão", tags:["teoria", "pratica"], link:"https://www.youtube.com/watch?v=XD4fOyRWt0g", dur:"0:20" },
+      { title:"Rompimento de Nova Baixa - Pullback", tags:["teoria", "pratica"], link:"https://www.youtube.com/watch?v=ZNxP-DpeNHs", dur:"0:34" },
+      { title:"Operacional TOP! Análise Técnica, Fluxo Institucional e Lógica do Preço na IQ", tags:["teoria", "pratica"], link:"https://www.youtube.com/watch?v=gwmx_oLwjS4", dur:"5:26" },
+      { title:"Opções Binárias com Análise Técnica, Fluxo Institucional e Lógica do Preço...", tags:["teoria", "pratica"], link:"https://www.youtube.com/watch?v=puIM3V8w9QU", dur:"0:34" },
+      { title:"03 - O Verdadeiro Suporte e Resistência", tags:["teoria", "pratica"], link:"https://www.youtube.com/watch?v=08xBY5PQjN4", dur:"13:12" },
+      { title:"02 - Tendências", tags:["teoria", "pratica"], link:"https://www.youtube.com/watch?v=xgHzp65V2lI", dur:"9:19" },
+      { title:"Café com Gráfico: BTC!", tags:["teoria", "pratica"], link:"https://www.youtube.com/watch?v=VI_1nljK6xA", dur:"31:31" },
+      { title:"Café Com Gráfico ☕📈 EURUSD - SP500 - BTC 🚀", tags:["teoria", "pratica"], link:"https://www.youtube.com/watch?v=c4Tb2gJAHjA", dur:"2h36min" },
+      { title:"Café Com Gráfico ☕ Bitcoin ✅", tags:["teoria", "pratica"], link:"https://www.youtube.com/watch?v=yoXNvlPDn4k", dur:"4h55min" },
+      { title:"Café com Gráfico ☕ Forex, BTC📈🚀", tags:["teoria", "pratica"], link:"https://www.youtube.com/watch?v=jAzKxbUqYk4", dur:"2h29min" },
+      { title:"Café com Gráfico ☕ Forex - BTC ✅", tags:["teoria", "pratica"], link:"https://www.youtube.com/watch?v=58kYhF-mXXY", dur:"1h40min" },
+      { title:"Café com Gráfico ☕ EURUSD - BTC ✅", tags:["teoria", "pratica"], link:"https://www.youtube.com/watch?v=MZVZomZwZXA", dur:"38:25" },
+      { title:"Café Com Gráfico ☕ Forex 📈", tags:["teoria", "pratica"], link:"https://www.youtube.com/watch?v=nm4Bl92Ub70", dur:"2h38min" },
+      { title:"Café Com Gráfico ☕ Forex 📈", tags:["teoria", "pratica"], link:"https://www.youtube.com/watch?v=EveQLOJYyJc", dur:"48:11" },
+      { title:"Café com Gráfico ☕| Forex 📈!", tags:["teoria", "pratica"], link:"https://www.youtube.com/watch?v=TS69o9SQqWE", dur:"1h06min" },
+      { title:"Café com Gráfico ☕: Forex 📈", tags:["teoria", "pratica"], link:"https://www.youtube.com/watch?v=ebEsAoq7E9E", dur:"19:40" },
+      { title:"Livro Análise Técnica Para Daytrade 🔥#investimentos #dinheiro", tags:["teoria", "pratica"], link:"https://www.youtube.com/watch?v=C9_G__VyeyI" },
+      { title:"Aluno lendo o gráfico 😎😄 #bitcoin #forex #btc", tags:["teoria", "pratica"], link:"https://www.youtube.com/watch?v=d6jrqPmUNhs" }
+    ]
+  },
+  {
+    id:"M03", name:"Candlesticks — A Linguagem dos Gráficos",
+    aulas:1,
+    lessons:[
+      { title:"Técnica Institucional : Arbitragem de Preço - Decidi Revelar", tags:["teoria", "pratica"], link:"https://www.youtube.com/watch?v=UEm0xVfhCuY", dur:"4:54" }
+    ]
+  },
+  {
+    id:"M04", name:"Indicadores Técnicos",
+    aulas:2,
+    lessons:[
+      { title:"Deriva na Média Móvel buscando Fibo! TOP!!!", tags:["pratica"], link:"https://www.youtube.com/watch?v=m9RqQvXTpoQ", dur:"0:30" },
+      { title:"17 - Médias Móveis e Bandas de Bollinger", tags:["pratica"], link:"https://www.youtube.com/watch?v=olz8m6Ey9vs", dur:"35:08" }
+    ]
+  },
+  {
+    id:"M05", name:"Setups e Estratégias de Entrada",
+    aulas:16,
+    lessons:[
+      { title:"Cataloguei um Padrão Novo!", tags:["setup", "pratica"], link:"https://www.youtube.com/watch?v=jYbn6eYYZX8", dur:"0:24" },
+      { title:"Operando um Fluxo de Alta pelo Fractal - Explicando entradas....", tags:["setup", "pratica"], link:"https://www.youtube.com/watch?v=ObEzb7qiJAg", dur:"11:40" },
+      { title:"Entradas Legendadas - Operando Ondas em Binárias", tags:["setup", "pratica"], link:"https://www.youtube.com/watch?v=qmUQZPvnHXg", dur:"4:18" },
+      { title:"OTC! Soros x 06 - Legendando ENTRADAS", tags:["setup", "pratica"], link:"https://www.youtube.com/watch?v=WGvWijHs6Ig", dur:"3:28" },
+      { title:"01 - O Movimento Padrão", tags:["setup", "pratica"], link:"https://www.youtube.com/watch?v=IBHTw5sOEXs", dur:"10:32" },
+      { title:"Conceitos e Critérios de Entradas - OB (MENTORIA)", tags:["setup", "pratica"], link:"https://www.youtube.com/watch?v=kHXr5f8Jab4", dur:"38:23" },
+      { title:"Sinal #btc #bitcoin", tags:["setup", "pratica"], link:"https://www.youtube.com/watch?v=i1DeGlg48bc" },
+      { title:"Sinal 📌 #btc 🔥#btcbrasil #shorts  #investimentos #dinheiro  #selic #brasil  #stories #reels", tags:["setup", "pratica"], link:"https://www.youtube.com/watch?v=QK4raC19cxg" },
+      { title:"Sinal 📌 #eurusd", tags:["setup", "pratica"], link:"https://www.youtube.com/watch?v=HKCi9p8GsuU" },
+      { title:"Sinal 📌 #bitcoin #dinheiro #forex #btc #investimentos", tags:["setup", "pratica"], link:"https://www.youtube.com/watch?v=o5uLh4XT05A" },
+      { title:"Sinal 📌 Análise no Insta #bitcoin #forex", tags:["setup", "pratica"], link:"https://www.youtube.com/watch?v=zuuHNRRQu7Q" },
+      { title:"#bitcoin Sinal 📌", tags:["setup", "pratica"], link:"https://www.youtube.com/watch?v=ObGFon2sWFk" },
+      { title:"Sinal 📌 POC Semanal : $29500 / $32000 🔥.#btcbrasil #bitcoinbrasil #forexbrasil  #dinheiro", tags:["setup", "pratica"], link:"https://www.youtube.com/watch?v=kUNmTlhnY8I" },
+      { title:"Sinal 📌 Comentem os lucros 🔥.#btcbrasil #bitcoinbrasil #forexbrasil #investimentos #dinheiro", tags:["setup", "pratica"], link:"https://www.youtube.com/watch?v=twrByRSx83A" },
+      { title:"Sinal 📌🔥 #bitcoin", tags:["setup", "pratica"], link:"https://www.youtube.com/watch?v=jx5n3pcw0co" },
+      { title:"Sinal📌 #eurusd / #btc 🔥", tags:["setup", "pratica"], link:"https://www.youtube.com/watch?v=GTEAoyvXjhw" }
+    ]
+  },
+  {
+    id:"M06", name:"Gestão de Risco e Capital",
+    aulas:6,
+    lessons:[
+      { title:"OTC Simulando ORDER FLOW - Stop Hunter!", tags:["gestao"], link:"https://www.youtube.com/watch?v=snqoNWcsUv8", dur:"1:03" },
+      { title:"+178 pts - Capturando stops junto com Big Players", tags:["gestao"], link:"https://www.youtube.com/watch?v=yLg2yr4xF_A", dur:"1:57" },
+      { title:"Losssss...... #Shorts", tags:["gestao"], link:"https://www.youtube.com/watch?v=rZ5JU4gy9QA", dur:"0:13" },
+      { title:"Nunca tome stop #bitcoin #dinheiro", tags:["gestao"], link:"https://www.youtube.com/watch?v=mYVGElL10ZY" },
+      { title:"Isso Tá estopando vc. Pare agora!!!! #dinheiro #forex #bitcoin", tags:["gestao"], link:"https://www.youtube.com/watch?v=sJQ4snI-W6g" },
+      { title:"Fim do loss #btc #daytrade #shorts", tags:["gestao"], link:"https://www.youtube.com/watch?v=zVwuRI0Q2A8" }
+    ]
+  },
+  {
+    id:"M07", name:"Psicologia do Trader",
+    aulas:2,
+    lessons:[
+      { title:"Lucros Diários: BTC! ✅📈", tags:["psico"], link:"https://www.youtube.com/watch?v=9tpOW7inDyg", dur:"1h25min" },
+      { title:"Lucros Diários: Forex, BTC ✅📈", tags:["psico"], link:"https://www.youtube.com/watch?v=sPkcCCjOkHg", dur:"6h49min" }
+    ]
+  },
+  {
+    id:"M08", name:"Operações Ao Vivo e Estudos de Caso",
+    aulas:250,
+    lessons:[
+      { title:"EURUSD AGORA", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=dNdSFCuOcW0", dur:"7:08" },
+      { title:"A Verdade sobre MENTORIAS DAYTRADE #daytrade", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=O2KxB5CyvLk", dur:"3:01" },
+      { title:"Daytrade com Arbitragem", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=CEd2n1EIX-0", dur:"1:24" },
+      { title:"Lucrando com compras e vendas simultâneas...( Forex ) Real", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=MCBKlgH1J6o", dur:"2:09" },
+      { title:"Scalps em FOREX - R$100,00 / dia", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=7wn2j1HMcrI", dur:"2:07" },
+      { title:"Como OPERAR um FLUXO DE ORDENS - BTC 1D", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=ZIjUCC7hIDU", dur:"8:07" },
+      { title:"Arbitrando EURUSD - SEMANA 01/JANEIRO", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=gQhJEadBB7Y", dur:"5:46" },
+      { title:"USE ISSO em seus trades - CORREÇÃO ABCDE", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=mQGO8NXMovs", dur:"3:51" },
+      { title:"#btc Cenários e ARBITRAGEM - ANÁLISE", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=AcJFC6vzKgU", dur:"0:49" },
+      { title:"Costurando Bitcoin e EURUSD no Mapa do Fluxo", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=HdVHS9Y2Y40", dur:"2:42" },
+      { title:"#BTC - Fim da correção?  #Shorts", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=BCu1R8z72ok", dur:"4:01" },
+      { title:"BTC - EURUSD Take no Order Flow💪", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=BuGjxBGqoRM", dur:"2:03" },
+      { title:"Livro Conceitos Institucionais Para Daytrade - PRÉVIA -", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=v0hywq71vjk", dur:"5:06" },
+      { title:"Costurando movs no BTC #shorts", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=mSqczyJ-0mw", dur:"1:00" },
+      { title:"OCO no BTC #shorts", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=a6XxhxsdiPg", dur:"0:44" },
+      { title:"OTC m1- Fluxo Institucional #shorts", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=sh1vL2JbKZM", dur:"0:24" },
+      { title:"OTC m1 - Correção em ORDER BLOCK #shorts", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=0MyuK_4qTv8", dur:"0:36" },
+      { title:"Operando uma correção abc no Fluxo de Alta", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=dUhmiQNC2FY", dur:"0:49" },
+      { title:"Rastreando Quebra de Fluxo pelo FRACTAL", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=faZb_vCopZ4", dur:"1:29" },
+      { title:"EURUSD: MN - H4 - m15 ANÁLISE", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=iTkyn4fD0lA", dur:"1:15" },
+      { title:"Forex: Conduzindo Estruturas", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=-f_ULKLGf3k", dur:"0:25" },
+      { title:"Grupo Daytrade Aberto: Forex - OB (Análises e Operações)", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=KuzfP6eeOhg", dur:"3:17" },
+      { title:"Operando abc com Wyckoff no Pregão Asiático", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=JOC_aSrxlM0", dur:"1:39" },
+      { title:"Taxa Div Rejeitando Taxa Div - DESCE! CMD1", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=WAJAZyE-hrI", dur:"0:24" },
+      { title:"Scalp na QUEBRA DE FLUXO! +200pts", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=RuPtU5Rt_a0", dur:"1:27" },
+      { title:"Quanto mais subir...vende!", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=r0kAVSml8_o", dur:"0:49" },
+      { title:"Defesas de Lógica do Preço no Fluxo Institucional", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=wWMM-ScMfno", dur:"0:33" },
+      { title:"Nova Baixa rompendo Taxa Div", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=PsVCU7cuMmE", dur:"0:20" },
+      { title:"Lógica no Fluxo Institucional", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=D1zV2DYzKjI", dur:"0:17" },
+      { title:"Fraqueza da Venda no Lote da Compra", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=3U3Cm95pQ9E", dur:"0:16" },
+      { title:"Defesas...", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=oW559AgjNHg", dur:"0:48" },
+      { title:"Defesa em Taxa Dividida", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=sZZcx7wURAM", dur:"0:18" },
+      { title:"Antecipando uma linda captura no OTC", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=tv0aqsMd4Ks", dur:"0:22" },
+      { title:"OTC Simulando Correção em Fluxo", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=FcRjNKX7oqI", dur:"0:22" },
+      { title:"EURUSD: Lucrando no Fluxo Institucional", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=QJ7agExLpzU", dur:"8:34" },
+      { title:"Indecisão na demanda", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=yG5FOg8fzQM", dur:"3:53" },
+      { title:"\"ASSERTIVIDADE\" tá errado rs. O correto é CONSISTÊNCIA!", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=438OsUjwHms", dur:"1:06" },
+      { title:"Fraqueza com Indecisão", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=QlsbVMVwSmE", dur:"0:36" },
+      { title:"Costurando os Movimentos na Correção do EURUSD - TOP!!!", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=tcizQJWkmkU", dur:"4:38" },
+      { title:"Continuação de Nova Baixa em Fluidez", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=V0K_9Fy95V0", dur:"0:26" },
+      { title:"Indecisão saindo de Estruturas", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=KDQmXqsili0", dur:"0:24" },
+      { title:"Estrutura Técnica", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=borgp_NaveY", dur:"0:26" },
+      { title:"Liquidez Interna", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=JGhhNBnDhKY", dur:"0:24" },
+      { title:"Quebra de Fluxo Interna", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=XUOZZ8Ul76Q", dur:"0:27" },
+      { title:"EURUSD conduzindo ORDER FLOW em m5", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=MNhzQFHdIqY", dur:"7:27" },
+      { title:"Conduzindo Ondas no OTC com Fluxo Institucional", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=Pw6-u7kZki4", dur:"4:34" },
+      { title:"Análise de Mercado: 22/05 BTC - EURUSD - DXY - Mini Índice - SP500", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=4sOleiVeDa0", dur:"13:23" },
+      { title:"Conduzindo ABC com Estrutura Técnica", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=9deSUCuR4D0", dur:"0:23" },
+      { title:"Defesa em TAXA DIVIDIDA", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=IY8F7k5FlZ0", dur:"0:12" },
+      { title:"RT em OBP - Fluxo Institucional no OTC", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=xbK9saDlV4g", dur:"0:20" },
+      { title:"Continuação de Nova Alta", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=Myfd5G-eZts", dur:"0:25" },
+      { title:"Defesa em DEMANDA", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=dH5L3dVs2nE", dur:"0:26" },
+      { title:"Fluidez retestando OBP #Shorts", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=Bec6AUtBfzc", dur:"0:23" },
+      { title:"Lógica e Fluxo Institucional... Lucrando nas Ondas!", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=47hQUQchz5Q", dur:"2:49" },
+      { title:"Estrutura Técnica - Ninguém ensina isso! #shorts", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=Ov3EW1Lt2Ls", dur:"0:45" },
+      { title:"Fluxo Institucional e Lógica em BINÁRIAS", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=FAnz89gACfs", dur:"3:26" },
+      { title:"Operando o ABC H1 do EURUSD - Costurando o Preço!", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=-tdURFUTUbk", dur:"8:17" },
+      { title:"Acumulação de Wyckoff no discurso do Powell +250pts!", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=5mm8ORTTg-Q", dur:"0:48" },
+      { title:"Análise de Mercado: 15/05 BTC - EURUSD - DXY - Mini Índice - SP500", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=W3vY1_H9E34", dur:"18:58" },
+      { title:"Operando Fractal da ONDA 3", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=WW_q_-6NHwk", dur:"2:12" },
+      { title:"Tiro no Bito! #Shorts", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=i20Kj2S6HYY", dur:"0:57" },
+      { title:"Lógica do Preço no BTC! #Shorts", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=JZN-DRCfLzM", dur:"0:17" },
+      { title:"+420pts Operando uma Correção ABCDE #Shorts", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=ev63lpcRox8", dur:"0:50" },
+      { title:"Comece a Lucrar Entendendo ORDER FLOW", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=C3qSBcIZ9rk", dur:"5:18" },
+      { title:"Unindo AT Institucional com LÓGICA DO PREÇO no Forex! Deu certo?", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=hkoTlsn-Uy4", dur:"2:15" },
+      { title:"Análise de Mercado: BTC - EURUSD - DXY - Mini Índice - SP500", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=3Pqtk7Mm9hI", dur:"13:39" },
+      { title:"+130pts EURUSD", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=MUmMTLE_0VA", dur:"0:59" },
+      { title:"+120pts no EURUSD", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=Xz_P-xmjxmQ", dur:"1:01" },
+      { title:"Conduzindo Movimentos no OTC!", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=YEN5ItUe0qg", dur:"2:08" },
+      { title:"Lote Solitário", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=UJslgoh36TE", dur:"0:33" },
+      { title:"Quebra de Fluxo", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=k6XW1wP7zws", dur:"0:24" },
+      { title:"Rejeição de Lote com INDECISÃO", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=Vso5phKDa_c", dur:"0:26" },
+      { title:"Operando ORDER BLOCK no OTC!!!?", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=H6o4Omz5IiA", dur:"0:36" },
+      { title:"Pullback Lote Solitário Rompido #Shorts", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=oH0vb0qW-X0", dur:"0:13" },
+      { title:"+200pts Operando Bloco Institucional (OBP+IMB)", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=RDwUjFWz0x4", dur:"2:15" },
+      { title:"Defesa da Nova Posição #Shorts", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=cxMXbX89m00", dur:"0:49" },
+      { title:"Grupo Daytrade: Análises e Operações!", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=Z0MRVkyxjOU", dur:"1:48" },
+      { title:"Lógica do Preço no Forex! #Shorts", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=xNjcetobHy0", dur:"0:43" },
+      { title:"Fluxo após liquidação #Shorts", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=ylNDKHx11H0", dur:"0:53" },
+      { title:"Forex - Venda perfeita no início da Estrutura #Shorts", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=aQifNd1Ar2g", dur:"0:51" },
+      { title:"Mentoria - Defesa de Compra e Venda", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=gUdTf8r8ohA", dur:"0:25" },
+      { title:"Captura de Liquidez #Shorts", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=e9LkFnVExSk", dur:"0:38" },
+      { title:"Defesa de Compra e Venda na estrutura #Shorts", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=aS92eMpKm8g", dur:"0:18" },
+      { title:"Pegadinha #Shorts", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=K_VSSuI_K3s", dur:"0:16" },
+      { title:"Retração no Espelhamento #Shorts", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=4Z-1Zjp2jiU", dur:"0:14" },
+      { title:"Indecisão da Venda no lote da Compra #Shorts", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=VRDTQ28mTmM", dur:"0:15" },
+      { title:"16 - Médias Móveis", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=GyCxvQBJi8M", dur:"19:04" },
+      { title:"15 - Fibonacci II", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=hNRPkIIsSEA", dur:"18:01" },
+      { title:"14 - Fibonacci I", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=z-IymMhSj5M", dur:"31:18" },
+      { title:"13 - Estruturas No Ciclo de Elliot", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=_GukW8V3CZU", dur:"4:32" },
+      { title:"12 - Contagem do Fractal", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=MXON5Rw07Pk", dur:"1h15min" },
+      { title:"11 - Ondas Corretivas", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=a_EB_QI0emI", dur:"15:32" },
+      { title:"10 - Ondas de Elliot", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=y64chmXJecI", dur:"21:21" },
+      { title:"08 - Gatilhos", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=dz0AZB1Ru3A", dur:"5:18" },
+      { title:"07 - Toques X Movimentos", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=FFpAegsegts", dur:"23:00" },
+      { title:"06 - Estruturas", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=MDiDKGDk-uM", dur:"34:39" },
+      { title:"05 - Fractal : Entendendo Ondas", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=-uMVvorigCM", dur:"24:04" },
+      { title:"04 - Traçando Linhas Corretamente", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=dodxh3ouRj4", dur:"13:43" },
+      { title:"Como estudar no Trading View", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=VYiMvJ_PgCc", dur:"8:55" },
+      { title:"Order Block em Binárias? Como tirar proveito...", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=M915ng4lC8c", dur:"6:14" },
+      { title:"Operando uma ACUMULAÇÃO no EURUSD", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=ilMpvjDY2aY", dur:"3:39" },
+      { title:"22.02: EURUSD", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=lL4wRBjcV90", dur:"11:17" },
+      { title:"28/02: Índice Dólar, EURUSD, BTC", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=KabnycEw9CE", dur:"11:51" },
+      { title:"09/03: Índice Dólar, EURUSD, BTC", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=GRsM3K3iQNc", dur:"8:39" },
+      { title:"Operando um Intervalo no EURUSD - Explicação", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=8I-djJEjCKY", dur:"13:08" },
+      { title:"BTC Agora ✅🚀", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=CBzzsGOAUdU", dur:"2h16min" },
+      { title:"Scalps em BTC ✅🚀", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=gkD3cIUah3Y", dur:"33:40" },
+      { title:"BTC ✅🚀", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=dQY0wH1ZQOc", dur:"57:30" },
+      { title:"Scalps em BTC ✅📈", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=bwhKyBuvTag", dur:"2h08min" },
+      { title:"BTC: 80.520 ou 97.250?", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=qcJtImJ4rLA", dur:"12:50" },
+      { title:"SP500: Arbitragem (Jon Padilha)", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=OsyaifcwmMY", dur:"2h57min" },
+      { title:"Lucros em BTC📈✅", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=UHOnw59Y8dc", dur:"1h27min" },
+      { title:"Arbitragem no BTC🚀", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=Xh_FoM6yu2U", dur:"16:46" },
+      { title:"SP5000 📈✅", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=8B4GUDCddaI", dur:"2h15min" },
+      { title:"Bitcoin 🚀📈", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=nAnM6sHJDUY", dur:"2h33min" },
+      { title:"Bitcoin Fim de Ano!", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=ps0oTxbdxNo", dur:"2h31min" },
+      { title:"Live de Lucros: Forex, BTC ✅", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=BONWD7oD34Q", dur:"0:36" },
+      { title:"BTC-EURUSD: 🚀", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=sl8y0gLjeS0", dur:"2h49min" },
+      { title:"Live de Lucros: EURUSD, BTC🚀✅", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=M5MVBa43gqA", dur:"3h28min" },
+      { title:"Live de Lucros: EURUSD - BTC ✅", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=hR9UO88MAyM", dur:"1h28min" },
+      { title:"Live de Lucros: BTC!🚀📈", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=jUPATPhbqGI", dur:"9h43min" },
+      { title:"BTC: Live de Natal!", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=5_8FhgecuN8", dur:"1h46min" },
+      { title:"Live de Lucros: EURUSD🚀✅", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=jh7Q21HzAQw", dur:"3h10min" },
+      { title:"Live de Lucros: EURUSD m1✅📈", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=nyovZ-obWYs", dur:"1h12min" },
+      { title:"Live de Lucros: BTC - EURUSD 🚀✅", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=hQ17L04s-ZU", dur:"2h23min" },
+      { title:"Posição EURUSD: Link na Bio.", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=RWLZTbJEYZ0", dur:"1h25min" },
+      { title:"Live de Lucros: EURUSD H4/m5/m1🚀📈", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=1h02hLOkz7Q", dur:"3h46min" },
+      { title:"Revolutionizing Disputes: The Bitcoin Arbitration Method", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=9wThjwuTE78", dur:"12:06" },
+      { title:"#bitcoin : Método Inédito - ARBITRAGEM", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=bwVYSXJSMgo", dur:"10h26min" },
+      { title:"#bitcoin : Método Inédito - ARBITRAGEM", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=TH3uCR88nyo", dur:"36:02" },
+      { title:"#bitcoin : Método Inédito - ARBITRAGEM", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=yka-dVPz02U", dur:"11h55min" },
+      { title:"BitCoin: Método Inédito - ARBITRAGEM", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=DCzsF4kgf0g", dur:"1h27min" },
+      { title:"BitCoin: Método Inédito - ARBITRAGEM", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=Ilx9CNs2Udo", dur:"8:26" },
+      { title:"BTC", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=hSntqu8I4_4", dur:"59:25" },
+      { title:"28 de abril de 2026", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=LrWUswj--_w" },
+      { title:"Vídeos completos no Tik Tok!#btc #music #trader", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=lPJAgjN5rU4" },
+      { title:"Grupo em Tempo Real: R$100,00 por dia #btc #trader", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=ai8hCqSKqNs" },
+      { title:"Notícias para pessoa física criar a liquidez que eles precisam. #btc #forex", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=w3qy-yLOpvw" },
+      { title:"#forex #btc Mentoria e Material de Estudo 🚀 Jon Padilha: 21 99536-2592", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=Ev0IIJ1dE60" },
+      { title:"#daytrade #bitcoin Um Curso Inteiro em uma foto! Quem tá começando, pode estudar comigo 💪", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=dorEk--06jU" },
+      { title:"Arbitragem Método: Jon Padilha #daytrade #daytrader #forex #bitcoin #btc", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=56c0VumpynY" },
+      { title:"Mentoria Individual #trader #daytrade #daytrader #forex #eurusd #jonpadilha", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=_-hvFa5ca0Q" },
+      { title:"#daytrade #daytrader #forex #eurusd", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=7EJDVoQhVj0" },
+      { title:"Mentoria Daytrade: Jon Padilha  #daytrade #daytrader #forex #eurusd", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=ZgPhMObMcoM" },
+      { title:"Daytrade na prática! #daytrade #daytrader #forex #eurusd", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=tipPI3DVY5I" },
+      { title:"Vamos pra cima! #daytrade #daytrader #forex #music", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=eKlnbWsQV1Y" },
+      { title:"EURUSD #daytrade #music #beach #love #daytrader #forex", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=h-1txhKqk2s" },
+      { title:"Daytrade com Arbitragem - Jon Padilha  #daytrade #forex #daytrader", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=0nGjQXqbTac" },
+      { title:"Aprende e Opera! Sem mi-mi-mi.... #dinheiro #bitcoin #forex #iqoption", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=4eNnyxCvg1k" },
+      { title:"Montagem de Posição com Big Players Ao vivo 🔥 #dinheiro #forex #investimentos", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=CNiYgq-Z_r0" },
+      { title:"#bitcoin +R$500,00 🔥", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=V65lotQWiGQ" },
+      { title:"Jon Padilha 📌 Mentoria Individual, Curso Online e Grupo Daytrade #bitcoin #investimentos #dinheiro", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=vMbslVa5G5c" },
+      { title:"Técnica Arbitragem 🔥 #bitcoin #dinheiro #investimentos #forex", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=5Jr0w2pxXJ8" },
+      { title:"#bitcoin 32k 📌???🔥🔥", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=YDwsKRYThFI" },
+      { title:"Arbitragem conta Real 🔥 #bitcoin #forex #dinheiro", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=jViSnH88_MQ" },
+      { title:"#bitcoin 📌Mapa Semanal  Assista completo no #tiktok", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=yaxH8pClOjw" },
+      { title:"RADaR 🔥 #bitcoin", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=HesOYPZxtCc" },
+      { title:"Lucre com essa Brecha Institucional #dinheiro #forex #bitcoin", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=7IuzsLJaKWg" },
+      { title:"Entenda Fluxo Fractal 📌🔥 #bitcoin #forex", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=fENXBHuvlJE" },
+      { title:"Saí da VENDA 📌 #bitcoin #dinheiro 🫵", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=jtAz97Sr1jg" },
+      { title:"O PULO do gato 🫵🔥 #bitcoin #forex", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=08m0nEW4iuM" },
+      { title:"MT5 breakeven pelo celular?? 🫵 #bitcoin", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=4x9uiN8QQwg" },
+      { title:"Quanto estou lucrando na venda do #bitcoin agora 📌", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=d0L8PsYwcB8" },
+      { title:"#bitcoin AGORA 🔥", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=1Jf8RN6OaHI" },
+      { title:"Scalps em m5 🔥 #bitcoin", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=3prneTz5ZAM" },
+      { title:"Falei a verdade pra um seguidor 🫵 #bitcoin", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=riHdmM5qti0" },
+      { title:"#bitcoin Derreteu!!! 🔥🔥", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=zC9zFEO405s" },
+      { title:"Arbitragem Conta Real #bitcoin", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=V-IMug9WFLA" },
+      { title:"Opere Quebra de Fluxo 🫵#forex", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=7JsycFP8qDg" },
+      { title:"I.A Explica Arbitragem #chatgpt", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=mXeEwjr7WPY" },
+      { title:"JBfm Música e Informação 📌", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=5m-6OB3RNuc" },
+      { title:"💎#777 🔥Destravando a Mente 3D #shorts", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=3FFw53mdGQ4" },
+      { title:"Like.... Compartilha... Retribuam.... gratidão 🔥🖖 #bitcoin #dinheiro", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=SNE56nJfI78" },
+      { title:"#eurusd 🔥📌", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=RqPIVivBjjA" },
+      { title:"Conduzindo Bitcoin - REAL -📌", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=Rtp0qspvV5E" },
+      { title:"Áudio Vazado pt02", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=qlA9H9ZYybg" },
+      { title:"Entrando na mnp com Big Players 🔥", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=3yXybY6BlQ0" },
+      { title:"Correção abcde AGORA no BTC", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=_ooGu9p5jyo" },
+      { title:"Arbitrando #bitcoin AGORA!!!", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=yDQBQBWg6CI" },
+      { title:"Vai operar btc #bitcoin FDS?", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=Z1PULfAYFAg" },
+      { title:"Nunca fique de um lado só.... #bitcoin", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=YDnX0DPJ_IE" },
+      { title:"Vai operar FOMC agora? #dinheiro #bitcoin", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=6u-AV25DhBA" },
+      { title:"EURUSD stopando todo mundo AGORA!!! #forex #dinheiro", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=-39x_kp9NZ4" },
+      { title:"Blitz #bitcoin x #eurusd 🔥🔥", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=SoyRRy1S8QM" },
+      { title:"Para dias de Notícia! abc Corrido... #forex #bitcoin", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=obNW45OglU4" },
+      { title:"Correções abc: Agora vc entende! #dinheiro #investimentos #daytrade", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=llQKD_YaLcY" },
+      { title:"#bitcoin AGORA!!!!🔥 #dinheiro #btc #investimentos", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=4UynaPmK_0Y" },
+      { title:"gente burra pt 02 #dinheiro #investimentos #bitcoin", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=eTtsOq5Ngis" },
+      { title:"sem sono... toma conteúdo f@d  #dinheiro #rendaextra #investimentos", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=qS2ruSSdvQE" },
+      { title:"GAIN 🙌🔥Aluno #dinheiro #investimentos #bitcoin", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=X8WMuZMN2n4" },
+      { title:"Completo no Tiko TeKo #dinheiro #bitcoin #investimentos", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=KP_NE_1pFQk" },
+      { title:"Gente burra.... #forex #investimentos #dinheiro", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=2NvH8QNfeqo" },
+      { title:"Faz o M porr&@ #bitcoin #dinheiro", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=0rzEEiaPN-E" },
+      { title:"#bitcoin #dinheiro #btc", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=X3IuSNnsom0" },
+      { title:"Fluxo #eurusd  #dinheiro #investimentos #forex", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=swHy273LwsY" },
+      { title:"Não precisa mais ADVINHAR! #dinheiro #bitcoin #forex", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=JtyqNxtmrxA" },
+      { title:"Blitiz 📌🔥 #bitcoin / #eurusd    #investimentos", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=zjkckyfkcVk" },
+      { title:"Correção ou Reversão? Não erre mais essa p#rra #dinheiro #investimentos #forex #bitcoin", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=zv23ZLYKkhA" },
+      { title:"Radar #bitcoin / #eurusd #dinheiro #investimentos", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=MaYdcLR_r8M" },
+      { title:"Todo iniciante confunde isso?!! #forex #dinheiro #investimentos #btc", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=cRBb1NkB9Yc" },
+      { title:"Correção #bitcoin #forex #dinheiro #investimentos #btc", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=vvuACacBr-4" },
+      { title:"Áudio Vazado #bitcoin #dinheiro #investimentos", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=uZbHCljb3IE" },
+      { title:"Grupo Daytrade #dinheiro #investimentos #forex #btc", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=tVpPcKO1l-U" },
+      { title:"#bitcoin #eurusd #forex #investimentos Sinal 📌", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=wCTs4iSnHns" },
+      { title:"#dinheiro #investimentos #forex #bitcoin", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=AvAQ70kbdjs" },
+      { title:"Sinal 📌 #eurusd Comentem os lucros 🔥 #investimentos #dinheiro #forex", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=4qCF6e7NRks" },
+      { title:"#shorts Arbitragem no #bitcoin #dinheiro", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=zaTmfW8L6eI" },
+      { title:"A atuação do preço MUDOU!!! #dinheiro #forex #investimentos #bitcoin", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=2QtnwBEVdXs" },
+      { title:"Conteúdo na Plataforma #forex #dinheiro #investimentos", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=thMvD_ccqwU" },
+      { title:"GAIN! #dinheiro #forex #investimentos #eurusd", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=uIPthL6bo4k" },
+      { title:"Sinal 📌 #eurusd 🔥.#shorts #bitcoinbrasil #forexbrasil #investimentos #dinheiro", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=7qoS_SBPgWo" },
+      { title:"Mi Mi Mi de sempre.... #dinheiro #forex #btc #shorts", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=hu5lXsLS7UE" },
+      { title:"GAIN 🔥😎 #forex #eurusd #shorts", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=Y-nq5L60YmA" },
+      { title:"Grabovoi #dinheiro #shorts", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=h9gKlavEFVA" },
+      { title:"#bomdia #bitcoin #dinheiro #forex", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=civnHe8dp0s" },
+      { title:"Sinal 📌 #eurusd #btc Comentem os lucros 🔥 #bitcoin  #forex #investimentos", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=plzOxw0jw7A" },
+      { title:"Atinga CONSISTÊNCIA #dinheiro #forex #btc", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=VZ6Xb0XyXiQ" },
+      { title:"Grupo Daytrade 🔥 #forex #dinheiro", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=16kMjYfbAOU" },
+      { title:"Livro Conceitos Institucionais #dinheiro #forex #bitcoin", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=aKcKPOiL7Pk" },
+      { title:"Páscoa é FAKE🔥😲 #dinheiro #bitcoin #forex", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=e4JWutrrGyM" },
+      { title:"GAIN GAIN 🔥😎 #dinheiro #forex #investimentos", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=mV4029kDJmE" },
+      { title:"Costurando o Bito com Arbitragem 📌 #btc #investimentos", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=YN0UlcMlyqo" },
+      { title:"Técnica Lucrati🔥 #bitcoin #dinheiro #forex", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=5DWt1FyIjBY" },
+      { title:"Sinal 📌#eurusd 1M - 1S - 1D 🔥.#btcbrasil #bitcoinbrasil #forexbrasil #investimentos #dinheiro", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=V9yb0FbX9Ho" },
+      { title:"Vai pausando pra sentir o drama #bitcoin #forex #btc", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=Zcvstv9slN0" },
+      { title:"Arbitragem 📌 Lucrando com os Big Players #investimentos #dinheiro", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=GQE02ucckfI" },
+      { title:"Arbitragem 📌 Ensinando a lucrar como um robô de alta frequência #bitcoin #forex", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=jq7JR9utpUM" },
+      { title:"LIVES diárias no Instagram #bitcoin #forex #daytrade", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=1d3nBvHh5HM" },
+      { title:"GAIN GAIN #bitcoin", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=gHSOtkFmIEw" },
+      { title:"Para lucrar tem que ARBITRAR o Mapa do Fluxo #btc #dinheiro", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=tG-fRM8JHb4" },
+      { title:"Bom dia traders..... minha 💡 ideia short pro #bitcoin Comentem aí 😎#dinheiro #investimentos", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=L4Ajk27HJz0" },
+      { title:"Mapa do Fluxo #bitcoin #dinheiro #btc", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=qrpvnY2427g" },
+      { title:"Grupo de dúvidas e análises liberado para os leitores... #bitcoin #btc #investimentos #dinheiro", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=l-G38rVgNHo" },
+      { title:"#investimentos #dinheiro #forex #bitcoin #forex", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=I2kfDhrbcYE" },
+      { title:"Grupo Daytrade #bitcoin #forex  #btc #dinheiro #investimentos", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=xzbJCGDLqew" },
+      { title:"#bitcoin #forex 💡🔥", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=eb2B3GSVFhs" },
+      { title:"😎🔥 #bitcoin #forex #dinheiro", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=ynSoFNjRq8I" },
+      { title:"#bitcoin #btc #forex 🔥", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=o9rT1_qxo9M" },
+      { title:"#bitcoin #btc #forex", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=1cchJOIExDo" },
+      { title:"GAIN 😉 ARBITRANDO o Mapa do Fluxo Institucional..#btc #bitcoin", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=Ced9itCf_1I" },
+      { title:"Abc ou 123? Arbitragem te faz lucrar pros dois lados 😃 #bitcoin #btc", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=oFm9OKtHMn4" },
+      { title:"Rastreando lucros rápidos no #bitcoin", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=-UTEtFD9skE" },
+      { title:"Bitcoin shorts profts #bitcoin #dinheiro #investimentos #daytrade #btc #forex", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=vFLu_7xKPX0" },
+      { title:"Gains Shorts #btc #daytrade #forex #investimentos #bitcoin #dinheiro", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=yoZDft5EE-E" },
+      { title:"BitCom Análise #shorts #daytrade #dinheiro #investimentos #bitcoin #forex", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=9tl3t2q_txA" },
+      { title:"#xauusd Idéia #daytrade #shorts #dinheiro #forex #investimentos", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=PluVYmF6GeI" },
+      { title:"Turma é furada....Mentoria Individual #shorts #bitcoin #dinheiro #daytrade #investimentos #forex", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=zUZhGr_U0Rs" },
+      { title:"#shorts Rastreie isso em suas negociações #daytrade #dinheiro #forex #investimentos #btc #bitcoin", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=S1cnqQlWNoE" },
+      { title:"#eurusd Idéia", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=3oTH9ENq2WE" },
+      { title:"Pullback após Nova Alta #Shorts", tags:["ao-vivo", "pratica"], link:"https://www.youtube.com/watch?v=XiQ1YaP2E5w" }
+    ]
+  }
+];
+
+function renderModules(data) {
+  const container = document.getElementById('modulesList');
+  container.innerHTML = '';
+  data.forEach((mod, mi) => {
+    const div = document.createElement('div');
+    div.className = 'module';
+    div.id = 'mod-' + mod.id;
+    const lessonRows = mod.lessons.map((les, li) => {
+      const tags = les.tags.map(t => {
+        const [cls, label] = TAG_MAP[t] || ['tag-teoria','Teoria'];
+        return `<span class="tag ${cls}">${label}</span>`;
+      }).join('');
+      const dur = les.dur ? `<span class="lesson-dur">${les.dur}</span>` : '';
+      const ytSvg = `<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>`;
+      return `<a class="lesson" href="${les.link}" target="_blank">
+        <span class="lesson-num">${String(li+1).padStart(2,'0')}</span>
+        <div class="lesson-dot"></div>
+        <div class="lesson-info">
+          <div class="lesson-title">${les.title}</div>
+          <div class="lesson-tags">${tags}</div>
+        </div>
+        ${dur}
+        <span class="lesson-yt">${ytSvg} Assistir</span>
+      </a>`;
+    }).join('');
+    div.innerHTML = `
+      <div class="module-header" onclick="toggleModule('${mod.id}')">
+        <div class="module-num">${mod.id}</div>
+        <div class="module-info">
+          <div class="module-name">${mod.name}</div>
+          <div class="module-meta"><span>📹 ${mod.lessons.length} aulas</span></div>
+        </div>
+        <svg class="module-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="module-body">${lessonRows}</div>`;
+    container.appendChild(div);
+  });
+}
+
+function toggleModule(id) {
+  document.getElementById('mod-' + id)?.classList.toggle('open');
+}
+
+// SEARCH
+const allLessons = [];
+COURSE.forEach(mod => mod.lessons.forEach(les => {
+  allLessons.push({ module: mod.id, moduleName: mod.name, title: les.title, tags: les.tags, link: les.link });
+}));
+
+const searchInput = document.getElementById('searchInput');
+const dropdown = document.getElementById('searchDropdown');
+const dropResults = document.getElementById('dropResults');
+
+function highlight(text, q) {
+  return text.replace(new RegExp(`(${q})`, 'gi'), '<mark>$1</mark>');
+}
+
+function doSearch(q) {
+  if (q.length < 3) { dropdown.classList.remove('show'); return; }
+  const matches = allLessons.filter(l =>
+    l.title.toLowerCase().includes(q.toLowerCase()) ||
+    l.moduleName.toLowerCase().includes(q.toLowerCase()) ||
+    l.tags.some(t => t.toLowerCase().includes(q.toLowerCase()))
+  ).slice(0, 8);
+  const ytSvg = `<svg class="drop-yt-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>`;
+  dropResults.innerHTML = matches.length === 0
+    ? `<div class="drop-empty">Nenhuma aula encontrada para "<strong>${q}</strong>"</div>`
+    : matches.map(m => `<a class="drop-item" href="${m.link}" target="_blank">
+        <span class="drop-module-badge">${m.module}</span>
+        <div><div class="drop-title">${highlight(m.title, q)}</div><div class="drop-desc">${m.moduleName}</div></div>
+        ${ytSvg}
+      </a>`).join('');
+  dropdown.classList.add('show');
+}
+
+searchInput.addEventListener('input', e => doSearch(e.target.value.trim()));
+document.addEventListener('click', e => { if (!e.target.closest('.search-wrap')) dropdown.classList.remove('show'); });
+document.addEventListener('keydown', e => {
+  if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); searchInput.focus(); }
+  if (e.key === 'Escape') { dropdown.classList.remove('show'); searchInput.blur(); }
+});
+
+renderModules(COURSE);
+document.querySelector('.module')?.classList.add('open');
+</script>
+
+<a href="https://wa.me/p/25502167309396224/5521964440418" target="_blank" id="waBtn" title="Falar com Jon Padilha">
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.122 1.524 5.859L.057 23.428a.5.5 0 0 0 .609.61l5.657-1.485A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.853 0-3.593-.5-5.095-1.373l-.363-.214-3.764.988.999-3.67-.235-.38A9.957 9.957 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+  <span>Falar com Jon</span>
+</a>
+<style>
+#waBtn {
+  position: fixed; bottom: 28px; right: 28px; z-index: 9999;
+  background: #25d366; color: #fff;
+  display: flex; align-items: center; gap: 10px;
+  padding: 14px 20px; border-radius: 50px;
+  font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600;
+  text-decoration: none; box-shadow: 0 4px 24px rgba(37,211,102,.5);
+  animation: waPop 2s ease infinite;
+}
+#waBtn:hover { background: #1da851; transform: scale(1.05); }
+@keyframes waPop {
+  0%,100% { box-shadow: 0 4px 24px rgba(37,211,102,.4); }
+  50% { box-shadow: 0 4px 40px rgba(37,211,102,.8); }
+}
+</style>
+
+
+<a href="https://wa.me/p/25502167309396224/5521964440418" target="_blank" id="waBtn" title="Falar com Jon Padilha">
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.122 1.524 5.859L.057 23.428a.5.5 0 0 0 .609.61l5.657-1.485A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.853 0-3.593-.5-5.095-1.373l-.363-.214-3.764.988.999-3.67-.235-.38A9.957 9.957 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+  <span>Falar com Jon</span>
+</a>
+<style>
+#waBtn {
+  position: fixed; bottom: 28px; right: 28px; z-index: 9999;
+  background: #25d366; color: #fff;
+  display: flex; align-items: center; gap: 10px;
+  padding: 14px 20px; border-radius: 50px;
+  font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600;
+  text-decoration: none; box-shadow: 0 4px 24px rgba(37,211,102,.5);
+  animation: waPop 2s ease infinite;
+}
+#waBtn:hover { background: #1da851; transform: scale(1.05); }
+@keyframes waPop {
+  0%,100% { box-shadow: 0 4px 24px rgba(37,211,102,.4); }
+  50% { box-shadow: 0 4px 40px rgba(37,211,102,.8); }
+}
+</style>
+
+
+
+
+
+
+
+</body>
+</html>
